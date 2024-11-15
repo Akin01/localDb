@@ -1,7 +1,7 @@
 /**
  * Error thrown when a filter operation cannot be found or is invalid.
  * @extends {Error}
- * 
+ *
  * @example
  * ```typescript
  * throw new FilterNotFoundError("Invalid filter criteria");
@@ -17,10 +17,10 @@ export class FilterNotFoundError extends Error {
 /**
  * Error thrown when a record is expected but none is found.
  * @extends Error
- * 
+ *
  * @class EmptyRecordError
  * @throws {EmptyRecordError} When attempting to access a record that doesn't exist
- * 
+ *
  * @example
  * throw new EmptyRecordError("No record found with id: 123");
  */
@@ -44,7 +44,7 @@ export enum IdGeneratorType {
 
 /**
  * Represents an identifier interface for database entities.
- * 
+ *
  * @template G - The type of the identifier field.
  * @property _id - The unique identifier for the database entity.
  */
@@ -63,7 +63,7 @@ export interface IDatabase<T> {
 	 * @returns Array of matching records
 	 */
 	findAll: (filter?: Partial<T>) => T[];
-	
+
 	/**
 	 * Finds a single record matching the filter
 	 * @param filter - Partial object to filter records
@@ -172,6 +172,7 @@ export class Database<T, G> implements IDatabase<T & DatabaseId<G>> {
 	 * @returns {(T & DatabaseId<G>)[]} An array of items that match the filter criteria. If no filter is provided, returns all items
 	 *
 	 * @example
+	 * ```typescript
 	 * interface User {
 	 *   name: string;
 	 *   email: string;
@@ -183,6 +184,7 @@ export class Database<T, G> implements IDatabase<T & DatabaseId<G>> {
 	 *
 	 * // Get items matching specific criteria
 	 * const filteredItems = ruserRepo.findAll({ name: "john Doe" });
+	 * ```
 	 */
 	findAll(filter?: Partial<T & DatabaseId<G>>): (T & DatabaseId<G>)[] {
 		const items = JSON.parse(this.db as string) as (T & DatabaseId<G>)[];
@@ -316,19 +318,19 @@ export class Database<T, G> implements IDatabase<T & DatabaseId<G>> {
 
 	/**
 	 * Deletes items from local storage that match the given filter criteria
-	 * 
+	 *
 	 * @param filter - Partial object containing key-value pairs to match against stored items
 	 * @returns Array of deleted items that matched the filter criteria
 	 * @throws {FilterNotFoundError} When filter parameter is empty/undefined
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * // Delete all items where name is "John"
 	 * const deletedItems = repository.delete({ name: "John" });
-	 * 
+	 *
 	 * // Delete item with specific ID
 	 * const deleted = repository.delete({ _id: "123abc" });
-	 * 
+	 *
 	 * // Delete items matching multiple criteria
 	 * const deletedMultiple = repository.delete({ age: 25, city: "New York" });
 	 * ```
@@ -360,18 +362,18 @@ export class Database<T, G> implements IDatabase<T & DatabaseId<G>> {
 
 	/**
 	 * Updates a single record in the local storage database that matches the filter criteria.
-	 * 
+	 *
 	 * @param filter - Partial object containing the search criteria to find the record to update
 	 * @param data - Partial object containing the fields to update (excluding _id)
 	 * @returns The updated record if found, undefined otherwise
 	 * @throws {FilterNotFoundError} When filter parameter is empty
 	 * @throws {EmptyRecordError} When data parameter is empty
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * // Assuming a User interface with {name: string, age: number, _id: string}
-	 * const repo = new LocalStorageRepository<User, string>();
-	 * 
+	 * const repo = new Database<User, string>("users");
+	 *
 	 * // Update user's age where name is "John"
 	 * const updatedUser = repo.updateOne(
 	 *   { name: "John" },
@@ -417,17 +419,17 @@ export class Database<T, G> implements IDatabase<T & DatabaseId<G>> {
 
 	/**
 	 * Updates multiple records in the local storage database that match the given filter criteria.
-	 * 
+	 *
 	 * @param filter - Partial object containing the criteria to match records for update
 	 * @param data - Partial object containing the fields to update (excluding _id field)
 	 * @returns Array of updated records that matched the filter criteria
 	 * @throws {FilterNotFoundError} When filter parameter is empty/undefined
 	 * @throws {EmptyRecordError} When data parameter is empty/undefined
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * // Update all users with role 'admin' to have isActive = true
-	 * const repository = new LocalStorageRepository<User, string>();
+	 * const repository = new Database<User, string>("users");
 	 * const updatedUsers = repository.updateAll(
 	 *   { role: 'admin' },
 	 *   { isActive: true }
@@ -474,17 +476,17 @@ export class Database<T, G> implements IDatabase<T & DatabaseId<G>> {
 	/**
 	 * Initializes the local storage with the provided data array.
 	 * Each item in the array will be assigned a unique identifier.
-	 * 
+	 *
 	 * @param data - An array of objects without _id property to be stored
 	 * @throws {EmptyRecordError} When the data array is empty or undefined
-	 * 
+	 *
 	 * @example
 	 * ```typescript
 	 * interface User {
 	 *   name: string;
 	 *   age: number;
 	 * }
-	 * 
+	 *
 	 * const repository = new Database<User, "string">("users");
 	 * repository.seed([
 	 *   { name: "John", age: 30 },
